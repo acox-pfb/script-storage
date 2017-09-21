@@ -1,0 +1,22 @@
+#!/bin/bash
+
+###########################
+#
+# run cat /proc/meminfo; uptime and top all graydient processes
+#
+#########################
+
+while true; do
+echo -e "\n*****************  UPTIME  *****************" >> mun_2.1.0.27_sys_info
+uptime >> mun_2.1.0.27_sys_info
+echo -e "\n*****************  MEMINFO  *****************" >> mun_2.1.0.27_sys_info
+cat /proc/meminfo >> mun_2.1.0.27_sys_info
+echo -e "\n*****************  IOSTAT  *****************" >> mun_2.1.0.27_sys_info
+iostat >> mun_2.1.0.27_sys_info
+echo -e "\n*****************  VMSTAT  *****************" >> mun_2.1.0.27_sys_info
+vmstat >> mun_2.1.0.27_sys_info
+echo -e "\n*****************  TOP  *****************" >> mun_2.1.0.27_sys_info
+ps -o pid,pcpu,pmem,state,rss,vsz,cmd $(pgrep graydient-) >> mun_2.1.0.27_sys_info
+sleep 10
+done
+

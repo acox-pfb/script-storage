@@ -1,0 +1,1 @@
+created new primitive sensor with id= 5

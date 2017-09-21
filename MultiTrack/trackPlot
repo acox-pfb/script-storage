@@ -1,0 +1,40 @@
+#!/usr/bin/gnuplot
+
+#
+# plot the MultiTrack averge times
+# and plot dropped count 
+#
+
+reset
+#set terminal wxt persist
+#set autoscale fix
+set terminal png
+
+cd '/opt/graydient/log'
+
+set xdata time
+set timefmt '%Y-%m-%d %H:%M:%S'
+set format x '%d-%H:%M'
+set xlabel "time"
+set xtics rotate by 45 right
+
+set output "video_0.log.png"
+set grid
+set style data linespoints
+plot 'MultiTrack_avg_video_0.log' using 1:6 title "MultiTrack Average", \
+'MultiScene_avg_video_0.log' using 1:6 title "MultiScene Average", \
+'MultiDAWDetect_avg_video_0.log' using 1:6 title "MultiDAWDetect Average", \
+'MultiTrack_drop_video_0.log' using 2:1 title "# dropped MultiTracks", \
+'MultiScene_drop_video_0.log' using 2:1 title "# dropped MultiScene", \
+'MultiDAWDetect_drop_video_0.log' using 2:1 title "# dropped MultiDAWDetect"
+
+set output "video_1.log.png"
+set grid
+set style data linespoints
+plot 'MultiTrack_avg_video_1.log' using 1:6 title "MultiTrack Average", \
+'MultiScene_avg_video_1.log' using 1:6 title "MultiScene Average", \
+'MultiDAWDetect_avg_video_1.log' using 1:6 title "MultiDAWDetect Average", \
+'MultiTrack_drop_video_1.log' using 2:1 title "# dropped MultiTracks", \
+'MultiScene_drop_video_1.log' using 2:1 title "# dropped MultiScene", \
+'MultiDAWDetect_drop_video_1.log' using 2:1 title "# dropped MultiDAWDetect"
+

@@ -1,0 +1,105 @@
+#!/usr/bin/python
+import os, sys, csv
+import subprocess
+import glob
+
+
+
+#####################
+# 
+# Install on each machine and have each machine interrogate itself
+#       core files;
+#       disk usage;
+#	PIDS and confirm they are matching;
+#	Check for errors in logs and console and report if any
+#	add more as necessary.
+#
+####################
+os.system('rm results.csv')
+zzz = open("results.csv", "a") #write aonly the things that are wrong to this file
+update=csv.writer(zzz)
+
+update.writerow(["DISK USAGE:"])
+#DISK USAGE 
+# if useage on any system is >70% let the user know
+os.system("df -h | awk -F ' ' '{print $1, $5}' > zusg.csv")
+with open("zusg.csv") as usg: #for line in open("zusg"):
+	read=csv.reader(usg, delimiter=' ')
+	usg.next() #skip first line in csv file
+	for row in read:
+		if row[1] > '70%':
+			print >> zzz, "{}".format(row)
+
+#update.writerow(["SWAP SIZE:"])
+#SWAP SIZE
+# print swap used, load and system memory
+os.system("top -b -n 1 -c -p $(pgrep -d ',' -f graydient-) > zpid.csv")
+pid = csv.reader(open('zpid.csv'), delimiter=',')
+for i, row in enumerate(pid):
+	if i == 0:
+		print >> zzz, row[3]
+	if i == 3:
+		print >>zzz, "System Memory: {}".format(row)
+	if i == 4:
+		print >>zzz, "Swap Used: {}".format(row[1])
+	
+	
+# search for error messages and if there are any let the user know, compare filesize > 0 review errors.
+#CORE FILE CHECK
+# if there's a core file let the user know
+
+os.system("ls -ltr /opt/graydient/log/learning_0.14*.console > zLEconsoleSize.csv") 
+with open("zLEconsoleSize.csv") as LEConsole:
+	read=csv.reader(LEConsole, delimiter=' ')
+	for row in read:
+		if row[4] > '0':
+			print >> zzz, "\t***LE has crashed file size:{}***".format(row[4])
+		else:	
+			print >> zzz, "LE has NOT crashed"
+
+
+update.writerow(["CORE FILES:"])
+if glob.glob('/var/crash/core.graydient-*'): #glob matches file name if true print them all out.
+	for name in glob.glob('/var/crash/core.graydient-*'):
+		print >> zzz, name
+else:
+	print "No CORE files dropped"
+
+
+
+os.system("grep error /opt/graydient/log/video_*.log | grep -v ellipse > zvidError.csv")
+if os.stat("zvidError.csv").st_size > 0:
+	print >> zzz, "\t***Video driver(s) contains error messgaes - review***"
+else:
+	print >> zzz, "No video driver errors"
+
+os.system("grep -i error /opt/graydient/log/video_*.14*.console > zvidConsole.csv") 
+if os.stat("zvidConsole.csv").st_size > 0:
+	print >> zzz, "\t***Video driver(s) console files contains error messgaes - review***"
+else:
+	print >> zzz, "No errors within video driver console files."
+
+os.system("grep ERROR /opt/graydient/log/learning_0.log > zLEError.csv")
+if os.stat("zLEError.csv").st_size > 0:
+	print >> zzz, "\t***Learning Engine contains error messgaes - review***"
+else:
+	print >> zzz, "No Learning Engine errors"
+
+os.system("grep ERROR /opt/graydient/log/controller.log >zcontrolError.csv")
+if os.stat("zcontrolError.csv").st_size > 0:
+	print >> zzz, "\t***Controller contains error messgaes - review***"
+else:
+	print >> zzz, "No Controller errors"
+os.system("rm z*.csv")
+zzz.close()
+os.system("less results.csv")
+
+
+
+
+
+
+
+
+
+

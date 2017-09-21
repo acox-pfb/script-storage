@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+#   ------------------------
+#    S	C  O  R  S  E  S  E
+#   ------------------------
+#
+# Takes a set of time-lapse screenshots of the Desktop
+# 
+# Expected usage: call scorsese from cron every 1-2 minutes> Sample crontab entry: 
+#
+# For screenshots every minute, use:
+# ***** /usr/bin/flock -n /tmp/scorsese.lock /home/seapronav/utils/scorsese
+#
+# For screenshots every 2 minutes, use:
+# */2**** /user/bin/flock -n/tmp/scorsese.lock /home/seapronav/utils/scorsese
+#
+# N.B. the use of 'flock' command here means that cron should not spawn
+# a new instance of the script before the previous one has finished.
+#
+# Michael Meech, version 1.4, 13 october 2013
+# Feedback: michael.meech@cgg.com
+
+# Set path variable
+IMG_DIR=screencaptures
+
+# Make an image directory if it doesn't exist
+mkdir -p ~/screencaptures
+
+# Check to see if there is > 500MB of disk space first, otherwise quit
+DISK_SPACE=`df ~/ | awk '/[0-9]%/{print $(NF-2)}'`
+if [[ $DISK_SPACE -lt 512000 ]]; then 
+	echo "less than 500MB disk space; exiting"
+	exit 1
+fi
+
+#Export display variable
+export DISPLAY=localhost:0
+
+# First, tidy up any files that have an mtime of more than 2 days
+find  $IMG_DIR -maxdepth 1 -name "*.jpg" -mtime +1 -exec rm {} \;
+
+# Now take a screenshot of the entire screen and assign a hostname and timestamp to the file
+import -quality 75 -window root $IMG_DIR/$(hostname)-$(date +%Y-%m-%d_%H-%M-%S).jpg
+
+# N.B. you can change the quality settings to set a balance between filesize and image quality 
+# Low numbers indicate more compression = smaller files, poorer picture quality. Max=100.

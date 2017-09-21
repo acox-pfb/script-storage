@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Run command to strip out data from top.log, nvidia.log and vmstat.log as needed
+#
+
+grep Mem: top.log | awk -F ' ' '{print $3, $5}' > zMem #gives total and used memory in Kb
+grep load top.log | awk -f ' ' '{print $10}' > zload #gives load over teh past minute
+
+grep graydient-video top.log | awk -F ' ' '{print $6, $9, $10, $12}' > zvideo # gives RES, %CPU, %Mem, name
+grep graydient-contr top.log | awk -F ' ' '{print $6, $9, $10, $12}' > zcontrol # gives RES, %CPU, %Mem, name
+grep graydient-learn top.log | awk -F ' ' '{print $6, $9, $10, $12}' > zlearn # gives RES, %CPU, %Mem, name
+
+
+gnuplot /home/aisight/stab_performance
+
+rm z*

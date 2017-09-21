@@ -1,0 +1,32 @@
+#!/bin/bash
+# locate the csv-msgbus.log files
+# grep out the anomaly alert_odds values
+# remove any other characters
+# sort the odds values into sensitivity groups
+#    >=0 = show ANY MOTION alerts (all of them)
+#    >=100 = show HIGH alerts
+#    >=1000 = show MEDIUM/HIGH alerts
+#    >=5000 = show MEDIUM alerts
+#    >=10000 = show MEDIUM/LOW alerts
+#    >=100000 = show LOW alerts (show only those are are really bad)
+#
+
+cd /VideoLibrary/DITesting/Alert-per-feature/Results/
+FILE="sensitivity-output"
+	if [ -f $FILE ]; then
+		rm $FILE
+	else
+		echo "$FILE does not exist."
+	fi
+
+for x in `ls *csv-msgbus.log`; do
+	echo $x
+	echo $x >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=0)print $1}' | echo "ANY MOTION=" `wc -l` >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=100)print $1}' | echo "HIGH=" `wc -l` >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=1000)print $1}' | echo "HIGH/MEDIUM=" `wc -l` >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=5000)print $1}' | echo "MEDIUM=" `wc -l` >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=10000)print $1}' | echo "MEDIUM/LOW=" `wc -l` >> $FILE
+	grep -E '"PUBLISH.*Anomaly"' $x | awk -F ',' '{print $7, $11, $13, $14}'| awk -F '\' '{print $11}' | tr -d '":'| awk '{if ($1>=100000)print $1}' | echo "LOW=" `wc -l` >> $FILE;
+done
+

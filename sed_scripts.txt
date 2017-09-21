@@ -1,0 +1,3 @@
+sed -e 's/^/%MESS%/' #input %MESS at start (^) or each line.
+
+sed -e 's/$/\n%WAIT%/' #input newline(\n) %WAIT% at the end of each line ($)

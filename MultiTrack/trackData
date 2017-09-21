@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#
+# run this to grep for MultiTrack, Scene and DAWDetect to be used by gnuplot
+#
+# grep dropp video_0.log | grep MultiTrack | awk '{print $1, $2, $6}'| cut -c6-16 | uniq -c
+# will grep MultiTrack and isolate month, day, hour and time then sort unique and provide count per minute
+#
+# grep System video_$i.log  | grep MultiTrack | awk '{print $2, $7, $14, $15, $16}' > MultiTrack_avg_$i
+# Will grep MultiTrack and return teh average time take from System Performance
+
+glog=/opt/graydient/log
+
+cd $glog
+
+for i in `ls video_*.log` ;
+do
+	grep System $i | grep MultiTrack | awk '{print $1, $2, $7, $14, $15, $16}' > MultiTrack_avg_$i
+	grep System $i | grep MultiScene- | awk '{print $1, $2, $7, $14, $15, $16}' > MultiScene_avg_$i
+	grep System $i | grep MultiDAWDetect | awk '{print $1, $2, $7, $14, $15, $16}' > MultiDAWDetect_avg_$i
+	grep dropp $i  | grep MultiTrack | awk '{print $1, $2, $6}'| cut -c1-16 | uniq -c > MultiTrack_drop_$i
+	grep dropp $i  | grep MultiScene- | awk '{print $1, $2, $6}'| cut -c1-16 | uniq -c > MultiScene_drop_$i
+	grep dropp $i  | grep MultiDAWDetect | awk '{print $1, $2, $6}'| cut -c1-16 | uniq -c > MultiDAWDetect_drop_$i
+done
+
+gnuplot /home/aisight/trackPlot

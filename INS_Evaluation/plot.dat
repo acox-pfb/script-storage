@@ -1,0 +1,57 @@
+#####################
+# gnuplot to plots for GPS andINS comparison
+####################
+
+
+##### Number of satellites
+set term png
+set title "Number of Satellites"
+set xlabel "time (secs)"
+set ylabel "# sats"
+set output "No_sats.png"
+plot "GPS-sats" with lines, "INS-sats" with lines
+
+
+###### QUality   
+set title "Quality Status"
+set xlabel "time (secs)"
+set ylabel "quality value"
+set yrange [-1:6]
+set output "quality.png"
+plot "GPS-quality" with lines, "INS-quality" with lines
+
+##### HDOP
+set title "HDOP"
+set xlabel "time (secs)"
+set ylabel "value"
+set output "HDOP.png"
+plot "GPS-HDOP" with lines, "INS-HDOP" with lines
+
+
+#### Semi-Major
+set title "Semi-Major SD"
+set xlabel "time (secs)"
+set ylabel "SD"
+set yrange [-0.1:0.3]
+set output "Semi-Major.png"
+plot "GPS-semi-maj" with lines, "INS-semi-maj" with lines
+
+
+####SEmi-Minor
+set title "Semi-Minor SD"
+set xlabel "time (secs)"
+set ylabel "SD"
+set yrange [-0.1:0.3]
+set output "Semi-Minor.png"
+plot "GPS-semi-minor" with lines, "INS-semi-minor" with lines
+
+
+
+#### HDG variance
+set title "INS Heading Variance"
+set xlabel "time (secs)"
+set ylabel "degrees"
+set output "INS_HDG_Variance.png"
+plot "HDG" with lines
+
+

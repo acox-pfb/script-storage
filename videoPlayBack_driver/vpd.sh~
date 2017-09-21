@@ -1,0 +1,13 @@
+#!/bin/bash
+# will run until it's finished
+x=100000
+
+for i in `ls /home/aisight/LE-sensor-csv/sensor*.csv`; do
+	python /home/aisight/qa/data_gen/videoPlaybackDriver.py $i -i $x &
+	$((x++))
+#	echo $x
+done
+
+
+
+

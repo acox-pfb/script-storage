@@ -1,0 +1,43 @@
+#!/usr/bin/python
+#import json
+from emAPI import EMConnector
+
+em = EMConnector()
+#x = em.create_video_sensor("test1", "rtsp://thor:5554/HotelCircle", 500, 0, 2)
+#print x
+#em.start_sensor(sensor['id'])
+#print y
+new_sensor = em.get_sensor_details('991') # how to get the sensor id from emAPI?
+print new_sensor
+
+
+"""
+ def create_video_sensor(self, name, url, \
+                            #universal bookkeeping
+                            alerting_odds, alert_suppression_period, aisight_server_id, \
+                            #these are video only, but not required
+                            target_fps=None, target_width=None, target_height=None, \
+                            alert_clip_length=None, post_alert_clip_length=None, alert_clip_text_color=None, \
+                            full_trajectory_clip=None, thermal_camera=None, \
+                            #now we start to get into the defaulted values, so they're named
+                            comments_required=False, globally_visible=False, \
+                            #these are optional and so if you don't have to send them, they have to be named
+                            user_id_list=None, user_groups_id_list=None, sensor_groups_id_list=None, \
+                            #these are optional, and thus also named
+                            description=None, serial_number=None, part_number=None, latitude=None, longitude=None):
+        
+        data_dict = {
+            "sensorType": {"id": 1},
+            "name": name,
+            "url": url,
+            "alertingOdds": alerting_odds,
+            "alertSuppressionPeriod": alert_suppression_period,
+            "analysisServer": {"id": aisight_server_id},
+            "commentsRequired": comments_required,
+            "globallyVisible": globally_visible,
+        }
+
+"""
+
+#call setupVideScalabilty, create sensors and get ID's.
+#subprocess.call(["./setupVidScalabilityTest.py", "-n", str(sensCount)

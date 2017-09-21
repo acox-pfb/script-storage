@@ -1,0 +1,43 @@
+#!/usr/bin/gnuplot
+
+reset
+set terminal png
+
+set xdata time
+
+
+#graydient process usage all plotted together
+set output "process-%usage"
+set grid
+set style data linespoints
+plot 'zvideo' using 0:2 title "video-%CPU", \
+'zvideo' using 0:3 title "video-%MEM",\
+'zcontrol' using 0:2 title "control-%CPU", \
+'zcontrol' using 0:3 title "control-%MEM", \
+'zlearn' using 0:2 title "learn-%CPU", \
+'zlearn' using 0:3 title "learn-%MEM"
+
+
+set output "process-RES"
+set grid
+set style data linespoints
+set ylabel "Kb"
+plot 'zvideo' using 0:1 title "video-RES", \
+'zcontrol' using 0:1 title "control-RES", \
+'zlearn' using  0:1 title "learn-RES"
+
+set output "Mem.png"
+set grid
+set style data linespoints
+set ylabel "Kb"
+plot 'zMem' using 0:1 title "Memory Total", \
+'zMem' using 0:2 title "Memory Used"
+
+set output "load average"
+set grid
+set style data linespoints
+plot 'zload' using 0:1 title "load per minute"
+
+
+
+

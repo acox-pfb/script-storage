@@ -1,0 +1,280 @@
+#!/usr/bin/python
+import subprocess
+import re
+import datetime
+import os
+import argparse
+import math
+import sys
+from time import sleep
+import time
+import glob
+
+maxSensor = 10
+
+username='admin'
+password='adminadmin'
+host='localhost'
+basePrimitiveSensorName='VideoSensor'
+
+
+#when creating sensors it will iterate through this list for the url and create a new url for each sensor
+#vidurl=["file://home/acox/HSCO-DowntownStreet-15minDay-AbandonedObject.mp4"]
+#vidurl=["rtsp://aisight:TheAIDoctors@192.168.26.214:5554/pkway"] #low vidgen activity
+#vidurl=["file://home/aisight/Videos/pkwy_day-8fps_1hr.avi"]
+#vidurl=["file://home/aisight/Videos/rooftop_4hr.avi"] #low unstable video activity
+#vidurl=["file://home/aisight/videos/test_49_twice.mp4"] #low vidgen activity
+#vidurl=["file://home/aisight/videos/test51_extended.mp4"] #medium vidgen activity
+#vidurl=["file://home/aisight/videos/test42_extended.mp4"] #high vidgen activity
+vidurl=["rtsp://192.168.26.214:5554/HotelCircle"] #low activity
+#vidurl=["file://home/aisight/Videos/zHotelCircle.mp4"]
+#vidurl=["z610Feed.mp4"] #medium activity
+#vidurl="file://home/aisight/Videos/z610Feed.mp4"
+#vidurl=["610Offramp.mp4"] #high activity
+#vidurl="file://home/aisight/Videos/z610OffRamp.mp4"
+
+
+#groupIds=dict()
+sensorIds=dict()
+
+
+####################################
+# To run this script edit the default value for numSensors at the bottom of script to be
+# a value to start the script from.
+# Edit the maxSensors value above to be the number of sensors the machine is licensed for.
+
+
+####################################
+#
+# Sensor count script:
+#	Y: create the sensors from scratch - setUpVideoScalabiltyTest
+#	Y: start small number of sensors and work way up till dropping
+#	look for dropped frames in video log - if dropping then stop sensors 	
+# 	revert back to previous count where it wasn't dropping
+#	delete sensors
+#	run reset on graydient and remove logs
+#	reduce the sensor count by half and run again.
+#	If not dropping:
+#		Stop sensors
+#		delete sensors
+#		run reset and remove logs
+#		increase sensor count by half way between current and last dropped count.
+#
+#
+#TODO - look into the LE for dropping samples too.
+#        Add output to let teh user know what the max count is
+####################################
+
+def count(sensCount):
+	global fid, lid
+#start videos using the sensorId from setupVidScalabilityTest.py.
+	
+	
+	startDate = datetime.datetime.now() #USE THE WHOLE DATE TIME string
+
+	zz = open("zlastDrop.txt", "w") # use this to update with the last dropped message to strip out time
+	p1=subprocess.Popen(["tac", "/opt/graydient/log/video_0.log"], stdout=subprocess.PIPE)
+	p2=subprocess.Popen(["grep","-m1", "dropp"], stdin=p1.stdout, stdout=subprocess.PIPE)
+	print "\n\t Looking for dropping phaseData\n"
+	output = p2.stdout.read()
+	print >> zz, output
+	zz.close()
+	sleep(100) #sleep is in secs set to 30mins if still dropping after this time then reduce count.
+	if os.stat("zlastDrop.txt").st_size < 10:
+		print "\n\t NO dropping messages\n"
+		notDropping(sensCount)
+	else:
+		g = open ("zlastDrop.txt", "r") #fails if there are 2 lines - remove blank line
+		lines = g.read().split()
+	#	print lines
+		date = lines[:2]
+		g.close()
+		print date
+		dropDate = datetime.datetime.strptime(str(date), "['%Y-%m-%d', '%H:%M:%S.%f']")
+		print dropDate
+	
+
+	print "startDate = {} dropDate = {}".format(startDate, dropDate)
+
+##########################
+#Create sensors
+#Start sensors
+#get datetime (time A)
+#wait 15 mins
+#get datetime (time B)
+#
+#If time B minus last drop time is more than 10mins
+#then not dropping - increase sensor count
+#
+#if time b minus last drop time is less than 10mins
+#then still dropping so reduce sensor count.
+#
+#startDate - DONT CARE ABOUT THIS THE DROP DATE AND NOW is important
+#######################
+
+	now = datetime.datetime.now()
+	deltaNow = now - datetime.timedelta(minutes=15)
+	diffDrop = deltaNow - dropDate
+	print "diffDrop = {}".format(diffDrop) #convert to show only the minutes
+	while True:
+		try:
+			delta = datetime.datetime.strptime(str(diffDrop), "%H:%M:%S.%f")
+			break
+		except ValueError:
+			print ("\n\t Dropping must have occured less then 10mins ago - reducing drop count\n")
+			dropping(sensCount)
+	diff = delta.strftime("%M") # what if teh difference us 1 hiour and 3, currently this will still say i's not dropping cause minutes is less then 10.
+	print diff
+	if diff > 10:
+		print "\n\t Video Driver not dropping - increasing count\n"
+		notDropping(sensCount)
+	else:
+		print "\n\t ERROR - exiting"
+		exit()
+
+
+"""			
+If not dropping then check video log every 30mins.
+If still not dropping then stop, reset and increase count by 50% but keep it less than the original count
+"""
+def notDropping(sensCount):
+	global fid, lid
+#if not dropping and it's been an hour then stop and increase count by 50%
+	print "************************************"
+	print "Stopping sensors and increasing count by 50%"
+	print "************************************"
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "stop", str(fid), str(lid)])
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "delete", str(fid), str(lid)])
+	
+ #remove logs after before resetting
+#	loglist = glob.glob("/opt/graydient/log/*.log")
+#	for f in loglist:
+#		os.remove(f)
+#
+#	print "\t\nResetting system"
+#	subprocess.call(["/opt/graydient/etc/reset", "-f"])
+
+	origCnt = sensCount
+	newCnt=(origCnt/2)+origCnt
+	print "\t\nNew increased count=", newCnt
+	
+	if newCnt < maxSensor:
+		sensCount=newCnt
+		setupSensors(newCnt)
+		count(sensCount)
+	else:
+		maxCount=maxSensor			
+		print "\t\n License count reached - max sensor count is {}".format(maxCount)
+		longTermRun(maxCount)
+		exit()
+
+def dropping(sensCount):
+	global fid, lid, origCnt
+	print "************************************"
+	print "Stopping sensors and decreasing count by 50%"	
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "stop", str(fid), str(lid)])
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "delete", str(fid), str(lid)])
+
+ #remove logs after before resetting
+	loglist = glob.glob("/opt/graydient/log/*.log")
+	for f in loglist:
+		os.remove(f)
+#use this bit if starting with high number of sensors and working down to not dropping
+#	newCount = sensCount/2
+#	print "\t\n New reduced count = {}".format(newCount)
+#	if newCount <= 5:
+#		print "\t\nSensor count has reached minimum count, exiting"
+#		exit()
+#	print "\t\nResetting system"
+#	subprocess.call(["/opt/graydient/etc/reset", "-f"])
+
+
+	maxCount=origCnt
+	print "\t\nMax sensor count is {}".format(maxCount)
+	longTermRun(maxCount)
+	exit()
+#	setupSensors(newCount)
+#	count(sensCount)
+
+
+def createVideoSensor(name, index):
+	print "name = {}".format(name)
+	print "index = {}".format(index)
+	print "url = {}".format(vidurl[0])
+	x = subprocess.call(["/opt/graydient/bin/videoctl", "-c", "create", name, str(index), vidurl])	
+	print "x={}".format(x)
+
+def setupSensors(sensCount):
+	global fid, lid
+#	print "\t\tsensCount = {}".format(sensCount)
+	for index in range(1, sensCount):
+		name="{}-{:05d}".format(basePrimitiveSensorName, index)
+   
+		vid_index = (index) % len(vidurl)
+		print vid_index
+		print index
+		newSensorId=createVideoSensor(name, index)  
+		print "newSensorId = {}".format(index) 
+#		sf = open("sensor_create.csv", "a")
+#		print >> sf,  name, str(vid_index),str(vidurl)
+  
+		sensId = open("zsensorId.txt","w")
+		print >> sensId, "created new primitive sensor with id= {}".format(index)
+		sensId.close()
+	
+	f=open("zsensorId.txt", "r") #get last sensor ID from setupVidSCalabilityTest
+#	sf.close()
+#	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "create", "-f", "sensor_create.csv"])
+#	os.remove("sensor_create.csv") #delete file.
+
+	for line in f:
+		x = line.split()
+		lid = x[6]
+	f.close()
+	#	os.remove("zsensorId.txt")
+
+	fid = int(lid)-(sensCount-1)
+	
+	print "first ID = ",fid
+	print "last ID = {}".format(lid)
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "start", str(fid), str(lid)]) 
+
+# once dropping occurs revert back to previous count or maxSensors and run long term.
+def longTermRun(maxCount):
+	print "\t\tOrigCount = {}".format(maxCount)
+	for index in range(1, maxCount+1):
+		name="{}-{:05d}".format(basePrimitiveSensorName, index)
+   
+		vid_index = (index) % len(vidurl)
+		#print vid_index
+		newSensorId=createVideoSensor(name, vid_index)  
+		print "newSensorId = {}".format(vid_index) 
+   
+		sensId = open("zsensorId.txt","w")
+		print >> sensId, "created new primitive sensor with id= {}".format(vid_index)
+		sensId.close()	
+	subprocess.call(["/opt/graydient/bin/videoctl", "-c", "start", str(fid), str(maxCount)]) 
+	maxCnt = open("maxSensorCount.txt","w")
+	print >> maxCnt, "\n\t\tFINISHED"
+	maxCnt.close()
+
+
+if __name__ == "__main__":
+ # Main script
+    parser = argparse.ArgumentParser(description='Perform Sensor Count on local machine, define sensor count to start with')
+    parser.add_argument('-n', '--numSensors', type=float, required=False, default=6, help='Define the number of sensors to start the script with.')
+
+    args = parser.parse_args()
+
+
+sensCount = int(math.floor(args.numSensors))
+print "\t\tStart Sensor Count = ",sensCount
+
+# call setupSensors, create sensors and get ID's.
+setupSensors(sensCount)
+
+
+count(sensCount)
+
+
+
