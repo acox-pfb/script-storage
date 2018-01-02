@@ -1,0 +1,165 @@
+#!/usr/bin/python
+# for each timestamp in sampleDump.csv count the nuber of tracks
+#csv =  trackId, timestamp
+#provide output for each sampleDump a list of timestamps and number of tracks 
+#sorted lowest to highest in timestamp order
+# return highest track count
+# return average number of tracks for length of video.
+
+
+import os
+import csv
+import glob, shutil
+import datetime
+from collections import Counter
+import pandas as pd
+
+
+#os.chdir("/opt/graydient/log/") #original # for testing
+os.chdir("/home/acox/")
+#compDIR="/home/acox/LOCALvRTSP/RTSP/5/"
+compDIR="/home/acox" # for testing
+
+files=[] #list
+tmp_files=[]
+for file in glob.glob("sensor*.csv"): # for testing
+#for file in glob.glob("*/sensor*.csv"):
+	files.append(file)
+#	tmp_files = [z.replace('/s', '_s') for z in files]
+#print tmp_files
+
+#print os.getcwd()
+
+z=len(files)
+a=0
+
+#print "TADA {} ".format(files[a])
+while (a < z):
+#	print glob.glob('*')
+	with open (files[a], "rb") as csvfile:
+		reader = csv.reader(csvfile)
+		tracks = {} #dictionary
+		trackln={}
+		tstamp=[]
+		collected = []
+		for row in reader:
+			collected.append(row[0])
+			tstamp.append(row[1])
+			timestamp = row[1]
+			trackid = row[0]
+			#print trackid
+			
+			
+			if timestamp in tracks: 
+				tracks[timestamp].append(row[0]) #if timestamp exists add it
+			else:
+				tracks[timestamp] = [row[0], ]# if it doesn't exist add it as # 0
+
+			if trackid in trackln:
+				trackln[trackid].append(row[0])
+			else:
+				trackln[trackid] = [row[0], ]
+			#print tracks[trackid]
+			
+		collected = sorted(set(collected)) # remove header - counting header as a track
+		collected.pop(0) # removes header
+
+
+		print ("\tFilename: {} ").format(files[a])
+		print ("\tTotal number of tracks {}").format(len(collected))	
+	
+		objects_in_frame = [] # will contain timestamp and number of tracks at that timestamp
+		for timestamp, track_list in tracks.items():
+			objects_in_frame.append((timestamp, len(track_list)))
+		
+		
+		track_length = [] # will contain trackid and number of frames (track_length)	
+		for trackid, track_list in trackln.items():
+			track_length.append((trackid, len(track_list)))
+		#track_length.pop(-1) #delete last entry in list which is #trackid
+
+		
+		track_length_sorted = sorted(track_length)
+		track_length_sorted.pop(0) # removes trackid string
+		awriter = csv.writer(open("trackLengthPerSample_{}".format(files[a]), "wb"))	# track length per sample
+		#print "TTTTTT{}".format(track_length)
+#		awriter = csv.writer(open("/home/acox/objsTrackLength_{}".format(tmp_files[a]), "wb")) # use for videoLibrary 
+		awriter.writerow(["trackID", "track length"])
+		for row in track_length_sorted:
+			awriter.writerow(row)
+		
+		print "\tFormat  =      (trackID, track length)"
+		print "\tMax track length: {} frames" .format(max(track_length_sorted, key=lambda item:item[1])) # max track length per sensor
+		#print "\tMin track length: {} frames" .format(min(track_length_sorted, key=lambda item:item[1])) # max track length per sensor
+		average = sum(i[1] for i in track_length_sorted)
+		avg = average / len(track_length_sorted)
+		print "\tAverage track length: {} frames".format(avg)
+			
+		objects_over_time = sorted(objects_in_frame)# number of tracks per frame
+		spf = csv.writer(open("samplesPerFrame_{}".format(files[a]), "wb"))
+		#sps = csv.writer(open("samplesPerSecond_{}".format(files[a]), "wb"))
+		samplesPerSec = open("samplesPerSecond_{}".format(files[a]), "w") # will contain unique sampelsPerSec info.
+		sps = open("sps.csv", "w") # temp file
+		objects_over_time.pop(0)
+#		writer = csv.writer(open("/home/acox/objsTime_{}".format(tmp_files[a]), "wb")) # use for videoLibrary 
+		spf.writerow(["timestamp", "samples"]) # can now plot the number of tracks per frame
+		for row in objects_over_time: #contains number of tracks for each timestamp sorted by timestamp
+			spf.writerow(row)
+		
+		#sps.write("time,samples\n")
+		for row in objects_over_time:
+			secs = ''.join(row[0]) #create string from tuple
+			seconds = secs[:-3] # remove last 3 values from timestamp, thus converting to secsonds
+			sps.write(seconds + ',')
+			print >> sps,row[1]
+		sps.close() # file contains sampeld per sec but not uniquely
+		
+		y = Counter(tstamp).most_common(1) # returns the max counter value and timestamp it occurred (1 timestamp = 1 frame)
+		print "\tFormat =                          [(timestamp, number of tracks)]"		
+		print "\tMax number of tracks per timestamp: {}".format(y)
+		print "\t\t***********************************"
+
+	a+=1
+	csvfile.close()	
+#
+# All plot files should either:
+#        * contain 0 where no data is recorded or 
+#        * the plotting should be able to read and interpolate the time correctly
+#
+
+with open("sps.csv", "r") as secs:
+	reader = csv.reader(secs)
+	sam = {}
+	results = {}
+	for row in reader:
+#		samples.append(row[0])
+		if row[0] in sam:
+			sam[row[0]].append(row[1])
+		else:
+			sam[row[0]] = [row[1]] 
+	
+	results = ({k:sum(map(int, v)) for k, v in sam.items()}) ### YAYA WORKS!
+		
+	a = next(iter(sorted(results)))
+	#a = '1513367129' #should be the first key in the results table
+	for x in sorted(results): 
+		#print x
+		if x == a :
+			#print "YAYA %s a= %s results = %s" %(x, a, results[x])
+			print >> samplesPerSec, x, results[x]
+			a = '%010d' % (int(a) +1)
+		else:
+			#print "NONO %s" %(a)  # if no match print key value and 0 untill the next match
+			while (a <= x):
+				#print "CREATING NEW a %s" %(a)
+				print >> samplesPerSec, a, '0'
+				a = '%010d' % (int(a) +1)
+'''
+to plot the samplesPerSec use:
+gnuplot> set style data linespoints
+gnuplot>  plot 'samplesPerSecond_sensor-100006_2017-12-15_19-34-40.csv' using 0:2 lw 2 ps 0.5
+ this will plot a line for 0 and make the points large enough to be discernable
+'''
+secs.close()
+os.remove("sps.csv")
+samplesPerSec.close()
