@@ -1,0 +1,105 @@
+#!/usr/bin/gnuplot
+
+#
+# plot the MultiTrack averge times
+# and plot dropped count 
+#
+
+reset 
+
+cd '/home/acox/LONO'
+
+set terminal png large size 1280,960
+set terminal png
+#set xrange [0:50000]
+#set yrange [8:14]
+
+set output "Video Driver %Memory.png"
+set grid
+set style data linespoints
+plot 'micro/zvid' using 0:1 title "video %MEM micro"
+#'earth/take2/zvideo-earth' using 0:2 title "video %MEM earth", \
+#'micro/zvideo-micro' using 0:2 title "video %MEM micro"
+#'zvid3' using 0:1 title "video %MEM 1.0.2.42", \
+#'zvid4' using 0:1 title "video %MEM 2.0.0.71"
+
+#set output "System-mem.png"
+#set grid
+#set title "System Memory"
+#set ylabel "KB"
+#set style data linespoints
+#plot 'odin/take2/zsystem_mem_used-odin' using 0:1 title "system_mem_used-odin", \
+#'earth/take2/zsystem_mem_used-earth' using 0:1 title "system_mem_used-earth", \
+#'micro/zsystem_mem_used-micro' using 0:1 title "system_mem_used-micro"
+
+#set output "micro Video Driver %Memory.png"
+#set grid
+#set style data linespoints
+#plot 'zvideo0' using 0:2 title "video %MEM", \
+#'zlearning' using 0:2 title "learning %MEM", \
+#'zcontroller' using 0:2 title "controller %MEM"
+#'zvid2' using 0:1 title "video %MEM 30Nov 2.0.0.71"
+
+#set output "micro CPU_USAGE.png"
+#set title "CPU %age Per Driver"
+#set grid
+#set ylabel "%CPU"
+#set xlabel "secs "
+#set style data linespoints
+#plot 'zvideo0' using 0:1 title "video0", \
+#'zlearning' using 0:1 title "learning", \
+#'zcontroller' using 0:1 title "controller"#
+#
+#set output "micro %CPU.png"
+#set grid
+#set ylabel "System %CPU"
+#set title "System %CPU"
+#set style data linespoints
+#plot 'zsystem_CPU' using 0:1 title "system_CPU"#
+#
+#set output "micro load.png"
+#set title "load average"
+#set ylabel "load"
+#set grid
+#set style data linespoints
+#plot 'zsystem_load' using 0:1 title "system_load"#
+#
+#set output "micro System-mem.png"
+#set grid
+#set title "System Memory in KiB"
+#set ylabel "KB"
+#set style data linespoints
+#plot 'zsystem_mem_used' using 0:1 title "system_mem_used"
+#
+#set output "micro Video-Source-%CPU.png"
+#set grid
+#set ylabel "%CPU"
+#set title "Total Video-Source %CPU.png"
+#plot 'zsourceCPU' using 0:1 title "total video-source"
+#
+#set output "micro5 Nvidia_GPU_Mem_Used.png"
+#set grid
+#set ylabel "Memory Used Mib"
+#set title "GPU Memory Usage"
+#set style data linespoints
+#plot 'zGPU0' using 0:5 title "GPU0 Used", \
+#'zGPU0F' using 0:5 title "GPU0 Free", \
+#'zGPU1' using 0:5 title "GPU1 Used", \
+#'zGPU1F' using 0:5 title "GPU1 Free"
+#
+#set output "micro Nvidia_GPU Utilzation.png"
+#set grid
+#set ylabel "MemoryUtilization %"
+#set title "GPU Memory Utilzation"
+#set style data linespoints
+#plot 'zUGpu0' using 0:5 title "Gpu0 Utilization", \
+#'zUMem0' using 0:5 title "Gpu0 Memory Utilzation", \
+#'zUEnc0' using 0:5 title "Gpu0 EncEARTHg Utilzation", \
+#'zUDec0' using 0:5 title "Gpu0 DecEARTHg Utilzation", \
+#'zUGpu1' using 0:5 title "Gpu1 Utilzation", \
+#'zUMem1' using 0:5 title "Gpu1 Memory Utilzation", \
+#'zUEnc1' using 0:5 title "Gpu1 EncEARTHg Utilzation", \
+#'zUDec1' using 0:5 title "Gpu1 DecEARTHg Utilzation"
+#
+
+
