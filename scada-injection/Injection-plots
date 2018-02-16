@@ -1,0 +1,48 @@
+#!/usr/bin/gnuplot
+
+#
+#injection plots:
+# raw data with alerts
+# raw data > severity 3
+# raw data < severity 3
+# ground truth overlaid with alerted run results
+#
+
+cd '/home/acox/Documents/LinktoDocs/2_work/Injection-testing/datasets/plots'
+
+reset 
+#set terminal wxt persist
+#set autoscale fix
+set terminal png large size 1280,960
+set terminal png
+set style line 1 lt 1 lw 3 pt 3 linecolor rgb "grey"
+set style line 2 lt 1 lw 3 pt 3 linecolor rgb "red"
+set style line 3 lt 1 lw 3 pt 3 linecolor rgb "green"
+#set yrange[25000:50000]
+
+set output "NAB flatline-1000.png"
+set grid
+set datafile missing '0.0'
+
+set title "NAB"
+#set style data linespoints
+plot '../zart_daily_jumpsdown/forplotting-spaces.csv' using 0:1 ls 1 title "RAW value" with linespoints, \
+'../zart_daily_jumpsdown/forplotting-spaces.csv' using 0:2 ls 2 title "Score" with points, \
+'../zart_daily_jumpsdown/forplotting-spaces.csv' using 0:3 ls 3 title "Labels" with points
+
+#set output "NAB flatline-2000.png"
+#set grid
+#set title "NAB"
+##set style data linespoints
+#plot '../zart_daily_flatmiddle/forplotting.csv' every ::1000::2000 using 0:1 ls 1 title "RAW value" with linespoints, \
+#'../zart_daily_flatmiddle/forplotting.csv' every ::1000::2000 using 0:2 ls 2 title "Score" with points
+
+#set xdata time
+#set xtics rotate by 45 right
+
+#set output "TruthvLive.png"
+#set grid
+#set title "Ground Truth V's Live Run"
+#set style data points
+#plot 'outlierTrackid.csv' using 0:1 ls 1 title "Ground Truth", \
+#'paddedHGRData.csv' using 0:1 ls 2 title "Live Run"
