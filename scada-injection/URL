@@ -1,6 +1,1 @@
 http://api.openweathermap.org/data/2.5/weather?zip=77084,us&mode=json&units=imperial&APPID=ee47fb921532fab91cda7997463ce28a
-
-AIR QUALITY TOKEN: 9e3c71cd65c5c7c01be0e9bac32108a7240b578f
-curl -i "http://api.waqi.info/feed/shanghai/?token=demo"
- 
-

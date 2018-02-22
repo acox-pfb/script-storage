@@ -8,9 +8,9 @@ cmd="/opt/omniai/bin/scadactl -c push "
 
 
  
-ram = "9" 
+ram = "1142" 
 i=1
-clock = 5
+clock = 500000
 wait = 10
 
 while i <= clock:

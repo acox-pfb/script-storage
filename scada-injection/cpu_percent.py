@@ -13,7 +13,7 @@ cpu_resource='cpu_percent'
 
 i=1
 clock = 500000
-wait = 10
+wait = 10 
 
 
 
@@ -40,9 +40,9 @@ while i <= clock:
 	cmd1=build_cmd(data_sensor_id,data_sensor)
 	if cmd1 != -9999:
 		os.system(cmd1)
-	cmd2=build_cmd(learning_sensor_id,learning_sensor)
-	if cmd2 != -9999:
-		os.system(cmd2)
+	#cmd2=build_cmd(learning_sensor_id,learning_sensor)
+	#if cmd2 != -9999:
+	#	os.system(cmd2)
 	i += 1
 	time.sleep(wait)
 

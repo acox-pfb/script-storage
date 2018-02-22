@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 #Plot numenta data
 
-datasets=("/home/acox/Documents/LinktoDocs/2_work/Injection-testing/datasets/NAB/tmpFiles/")
+datasets=("/home/acox/Documents/LinktoDocs/2_work/Injection-testing/datasets/tmpFiles/")
 NABFiles=("/home/acox/Documents/LinktoDocs/2_work/Injection-testing/datasets")
 os.chdir(datasets)
 
@@ -16,7 +16,7 @@ for dirName in glob.glob('z*'):
     #print dirName
     fname = dirName[1:]
     os.chdir(datasets+'/'+dirName)
-    for f in glob.glob('*Sev*.csv'):
+    for f in glob.glob('Plotting-Sev*.csv'):
         print "Plotting: {}: {}".format(dirName, f)
         x1=[]
         x2=[]

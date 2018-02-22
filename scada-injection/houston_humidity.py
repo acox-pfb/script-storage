@@ -16,7 +16,7 @@ current_humidity_77084 = w.get_humidity()
 #print(current_temp_77084)
 
  
-humidity_77084 = "7" 
+humidity_77084 = "1140" 
 i=1
 clock = 5
 wait = 10
