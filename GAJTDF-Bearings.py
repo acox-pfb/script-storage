@@ -27,7 +27,7 @@ def run_fast_scandir(dir, ext):    # dir: str, ext: list
 
 def ntv1():
     startDir = "D:\\PNTAX24\\DF"
-    brgFile = "D:\\PNTAX24\\Processing\\GAJT-TIMES"
+    brgFile = "D:\\PNTAX24\\Processing\\TIMES"
 
     subfolders, files = run_fast_scandir(brgFile, [".DAT"])
     #print(files)
@@ -47,12 +47,12 @@ def ntv1():
                 brgFile.write("time, L1Brg, L1Status, L2Brg, L2Status\r")
 
 
-                if gajt == "GAJT710" or gajt == "GAJT410":
+                if gajt == "aaaaa" or gajt == "bbbbb":
                     print(basename)
                     with open(path + "\\" + basename + ".DAT", "r") as f:
                         #print(path + "\\" + basename + ".DAT")
                         for line in f:
-                            if line.startswith("#SITREP2A"):
+                            if line.startswith("#Sxyz"):
                                 timeField = line.split(";")[0].split(",")[7]
                                 #print(timeField)
                                 time = float(timeField)/1000
@@ -71,7 +71,7 @@ def ntv1():
                                 #print(basename, time, L1Brg, L1Status, L2Brg, L2Status)
                                 brgFile.write(str(time) + "," + L1Brg + "," + str(L1Status) + "," + L2Brg + "," + str(L2Status) + "\r")
             
-                if gajt == "GAJT310" :
+                if gajt == "ffffff" :
                     print("NOT READY YET", basename)
 
 if __name__ == "__main__":
