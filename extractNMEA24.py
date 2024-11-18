@@ -27,7 +27,7 @@ def move(InputFile):
     filename = InputFile[:-4]
     jDay = filename[:3]
     print(jDay)
-    dir = "D:\\PNTAX24\\HHAnowSECURESTART\\RawSubmittal" + '\\' + jDay
+    dir = "path\\RawSubmittal" + '\\' + jDay
     isExist = os.path.exists(dir)
     if not isExist:
         os.makedirs(dir)
