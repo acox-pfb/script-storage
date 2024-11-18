@@ -155,11 +155,11 @@ for row in inputFile:
         newTimeStamp = (int(headerFields[7]) / 1000 - startHeaderTime) + startTime
 
     
-    # This covers the AE and 410 which do not put a time since running in the timestamp
+    # This covers thewhich do not put a time since running in the timestamp
     # This bandaid is to key off SITREP since we know this will be asked for at 1Hz.
     if(timeStatus == 0):
         headerFields[6] = "1"
-        if("SITREP2A" in headerFields[0]):
+        if("P2A" in headerFields[0]):
             if bSequenceJumped == False:
                 newTimeStamp = newTimeStamp + 1
             else:
