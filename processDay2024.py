@@ -21,8 +21,7 @@ def run_fast_scandir(dir, ext):    # dir: str, ext: list
     return subfolders, files
 
 def process():
-    #startDir = "D:\PNTAX2023\Data\Processing\\242_NTV1_ET3_BLUE-PHASE2"
-    #startDir = "D:\PNTAX2023\Data\Processing\\241_NTV1_ET2_RED-PHASE1"
+    
 
     startDir = sys.argv[1]
 
@@ -63,12 +62,12 @@ def process():
                     continue
                 name = str.split(basename, "_")
 
-                if "PWRPAK7" in file or "OEM725M" in file or "UBLOX" in file or "SEPTENTRIO" in file or "STL" in file:
+                if "PWRPAK7" in file or "OEM725" in file or "UBLOX" in file or "SEPTENTRIO" in file or "STL" in file:
                     nmeaCall = nmeaCallCmd + path + directoryNMEA + "\\" + basename + "_NMEA.TXT " + file
                     ubcallReturn = subprocess.call(nmeaCall, shell=True)
 
 
-                if "PWRPAK7" in file or "OEM725M" in file:
+                if "PWRPAK7" in file or "OEM725" in file:
                     decimateCall = decimateBinary + path + directory1Hz + "\\" + basename + "_1HZ.BIN " + file
                     subcallReturn = subprocess.call(decimateCall, shell=True)
                     submitBinaryCall = submittalBinary + path + directorySubmitBinary + "\\" + basename + ".BIN " + path + directory1Hz + "\\" + basename + "_1HZ.BIN" 
@@ -79,7 +78,7 @@ def process():
                 
                     bestSatsFilePath = path + directory1Hz + "\\" + basename + "_1HZ\\ASCII\\" + basename + "_1HZ.BIN.ascii.BESTSATS"
                     if os.path.isfile(bestSatsFilePath):
-                        subprocess.run("python D:\\PNTAX24\\processBestSats.py " + bestSatsFilePath)
+                        subprocess.run("python \\processBestSats.py " + bestSatsFilePath)
                     
                         moveSource = path + directory1Hz + "\\" + basename + "_1HZ\\ASCII\\" + basename + "_1HZ.BIN.ascii_constellations.gitl"
                         moveDestination = path+directoryBestSats
