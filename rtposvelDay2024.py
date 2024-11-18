@@ -133,28 +133,8 @@ def get3DStats(path, basename):
     
 
 routeTimes = {
-    "261_FIVE-CT-HIGH"      :   [202261,    206724],
-    "261_ONE-CT-LOW"        :   [196269,    200503],
-    "261_THREE-CT-LOW"      :   [207901,    211821],
-    "262_FIVE-CT-HIGH-ET"   :	[288793,	292850],
-    "262_ONE-CT-HIGH-ET"    :	[298977,	302962],
-    "262_ONE-CT-LOW-ET"     :   [283144,    287284],
-    "262_THREE-CT-LOW-ET"   :   [293634,	297936],
-    "263_FIVE-CT-HIGH-ET"   :   [375560,    379800],
-    "263_THREE-CT-HIGH-ET"  :   [369412,    373785],
-    "264_RASPBERRY-ONE"     :   [455398,    461109],
-    "264_RASPBERRY-PIE-ONE" :   [467324,   	469388],
-    "264_RASPBERRY-PIE-TWO" :   [470500,	473106],
-    "265_RASPBERRY-ONE"     :   [541400,	546996],
-    "265_RASPBERRY-PIE-TWO" :   [554103,	555895],
-    "267_BLUEBERRY-ONE_RUN1":   [153531,    157338],
-    "267_BLUEBERRY-ONE_RUN2":   [158381,    162026],
-    "267_BLUEBERRY-ONE_RUN3":   [162494,	164895],
-    "268_BLUEBERRY-TWO_RUN1":   [241097,    244394],
-    "268_BLUEBERRY-TWO_RUN2":   [245315,    248864],
-    "268_BLUEBERRY-TWO_RUN3":   [249319,	251699],
-    "269_BLUEBERRY-THREE_RUN1":   [325068,    328738],
-    "269_BLUEBERRY-THREE_RUN2":   [330162,    333826],
+    
+    "abc":   [330162,    333826],
 
 }
 
@@ -164,9 +144,9 @@ stopTime = 0
 
 rtposvelCmd = "rtposvel /GAL /KML "
 
-startDir = "D:\\PNTAX24\\Processing"
-truthDir = "D:\\PNTAX24\\Processing\\Truth"
-rtposvelDir = "D:\\PNTAX24\\Processing\\RTPOSVEL"
+startDir = "D:\\Processing"
+truthDir = "D:\\Processing\\Truth"
+rtposvelDir = "D:\\Processing\\RTPOSVEL"
 
 truthSubfolder, truthFiles = run_fast_scandir(truthDir, [".TXT"])
 
