@@ -15,7 +15,7 @@ def main():
         y = x[:-4]+".BIN"
         jDay = x[:3]
         print(jDay)
-        dir = "D:\\PNTAX24\\HHAnowSECURESTART\\RawSubmittal"+'\\'+jDay+'\\'+"NOVATELBINARY"
+        dir = "path\\RawSubmittal"+'\\'+jDay+'\\'+"NOVATELBINARY"
         isExist = os.path.exists(dir)
         if not isExist:
             os.makedirs(dir)
