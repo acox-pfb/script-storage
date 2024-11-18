@@ -19,22 +19,22 @@ def run_fast_scandir(dir, ext):    # dir: str, ext: list
         files.extend(f)
     return subfolders, files
 
-def ExtractSitRep2A(file):
+def Extract2A(file):
         basename = os.path.splitext(os.path.basename(file))[0]
         path = os.path.dirname(file)
         inputFile = open(file);
-        outputFile = open(path+ "\\" +basename + ".SITREP2A.LOG", 'w')
+        outputFile = open(path+ "\\" +basename + ".2A.LOG", 'w')
 
         for row in inputFile:
             if "SITREP2A" in row:
-                index = row.index("#SITREP2A")
+                index = row.index("#2A")
                 outputFile.write(row[index:])
         
         inputFile.close()
         outputFile.close()
         
 
-startDir = "D:\\PNTAX2022\\Process\\DF\Day228"
+startDir = psth\\DF\Day228"
 
 subfolders, files = run_fast_scandir(startDir, [".LOG"])
 for file in files:
@@ -44,7 +44,7 @@ for file in files:
             path = os.path.dirname(file)
             
             if "NTV-GAJT" in file:
-                print("Stripping Sitrep2A from " + file)
-                ExtractSitRep2A(file)
+                print("Stripping  from " + file)
+                Extract2A(file)
 
 
